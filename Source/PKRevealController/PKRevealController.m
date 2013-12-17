@@ -167,9 +167,9 @@ typedef struct
         _leftViewController = leftViewController;
         _rightViewController = rightViewController;
         
-        _frontViewController.revealController = self;
-        _leftViewController.revealController = self;
-        _rightViewController.revealController = self;
+        ((UIViewController *)_frontViewController).revealController = self;
+        ((UIViewController *)_leftViewController).revealController = self;
+        ((UIViewController *)_rightViewController).revealController = self;
         
         [self setValuesForKeysWithDictionary:options];
     }
@@ -380,7 +380,7 @@ typedef struct
     [self animateToState:toState completion:completion];
 }
 
-- (void)setFrontViewController:(UIViewController *)frontViewController
+- (void)setFrontViewController:(id)frontViewController
               focusAfterChange:(BOOL)focus
                     completion:(PKDefaultCompletionHandler)completion
 {
@@ -404,7 +404,7 @@ typedef struct
     }
 }
 
-- (void)setFrontViewController:(UIViewController *)frontViewController
+- (void)setFrontViewController:(id)frontViewController
 {
     if (frontViewController != _frontViewController)
     {
@@ -422,7 +422,7 @@ typedef struct
     }
 }
 
-- (void)setLeftViewController:(UIViewController *)leftViewController
+- (void)setLeftViewController:(id)leftViewController
 {
     if (leftViewController != _leftViewController)
     {
@@ -440,7 +440,7 @@ typedef struct
     }
 }
 
-- (void)setRightViewController:(UIViewController *)rightViewController
+- (void)setRightViewController:(id)rightViewController
 {
     if (rightViewController != _rightViewController)
     {
@@ -460,7 +460,7 @@ typedef struct
 
 - (void)setMinimumWidth:(CGFloat)minWidth
            maximumWidth:(CGFloat)maxWidth
-      forViewController:(UIViewController *)controller
+      forViewController:(id)controller
 {
     if ([controller isEqual:self.leftViewController])
     {
@@ -496,7 +496,7 @@ typedef struct
 
 }
 
-- (UIViewController *)focusedController
+- (id)focusedController
 {
     UIViewController *controller = nil;
     
@@ -1064,16 +1064,16 @@ typedef struct
 
 #pragma mark - View Controller Containment
 
-- (void)addViewController:(UIViewController *)childController container:(UIView *)container
+- (void)addViewController:(id)childController container:(UIView *)container
 {
     if (childController &&
         ![self.childViewControllers containsObject:childController])
     {
         [self addChildViewController:childController];
-        childController.view.frame = container.bounds;
-        childController.view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
-        childController.revealController = self;
-        [container addSubview:childController.view];
+        ((UIViewController *)childController).view.frame = container.bounds;
+        ((UIViewController *)childController).view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
+        ((UIViewController *)childController).revealController = self;
+        [container addSubview:((UIViewController *)childController).view];
 		if ([container isKindOfClass:[PKRevealControllerView class]]) {
 			((PKRevealControllerView *)container).viewController = childController;
 		}
@@ -1081,14 +1081,14 @@ typedef struct
     }
 }
 
-- (void)removeViewController:(UIViewController *)childController
+- (void)removeViewController:(id)childController
 {
     if (childController && [self.childViewControllers containsObject:childController])
     {
         [childController willMoveToParentViewController:nil];
-        [childController.view removeFromSuperview];
+        [((UIViewController *)childController).view removeFromSuperview];
         [childController removeFromParentViewController];
-        childController.revealController = nil;
+        ((UIViewController *)childController).revealController = nil;
     }
 }
 
@@ -1367,23 +1367,23 @@ typedef struct
 {
     if ([self hasLeftViewController] && [self hasRightViewController])
     {
-        return self.frontViewController.supportedInterfaceOrientations &
-               self.leftViewController.supportedInterfaceOrientations &
-               self.rightViewController.supportedInterfaceOrientations;
+        return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
+               ((UIViewController *)self.leftViewController).supportedInterfaceOrientations &
+               ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
     }
     else if ([self hasLeftViewController])
     {
-        return self.frontViewController.supportedInterfaceOrientations &
-               self.leftViewController.supportedInterfaceOrientations;
+        return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
+               ((UIViewController *)self.leftViewController).supportedInterfaceOrientations;
     }
     else if ([self hasRightViewController])
     {
-        return self.frontViewController.supportedInterfaceOrientations &
-               self.rightViewController.supportedInterfaceOrientations;
+        return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
+               ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
     }
     else
     {
-        return self.frontViewController.supportedInterfaceOrientations;
+        return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations;
     }
 }
 
