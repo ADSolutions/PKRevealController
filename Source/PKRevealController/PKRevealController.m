@@ -32,7 +32,7 @@
 
 #define DEFAULT_ANIMATION_DURATION_VALUE 0.185
 #define DEFAULT_ANIMATION_CURVE_VALUE UIViewAnimationCurveLinear
-#define DEFAULT_LEFT_VIEW_WIDTH_RANGE NSMakeRange(260, 40)
+#define DEFAULT_LEFT_VIEW_WIDTH_RANGE NSMakeRange(340, 40)
 #define DEFAULT_RIGHT_VIEW_WIDTH_RANGE DEFAULT_LEFT_VIEW_WIDTH_RANGE
 #define DEFAULT_ALLOWS_OVERDRAW_VALUE YES
 #define DEFAULT_ANIMATION_TYPE_VALUE PKRevealControllerAnimationTypeStatic
@@ -82,9 +82,6 @@ typedef struct
 @property (nonatomic, strong, readwrite) UITapGestureRecognizer *revealResetTapGestureRecognizer;
 
 @property (nonatomic, assign, readwrite) PKRevealControllerState state;
-
-@property (nonatomic, assign, readwrite) NSRange leftViewWidthRange;
-@property (nonatomic, assign, readwrite) NSRange rightViewWidthRange;
 
 @property (nonatomic, strong, readwrite) PKLayerAnimator *animator;
 
