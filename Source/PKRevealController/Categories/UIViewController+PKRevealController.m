@@ -39,7 +39,6 @@ static char revealControllerKey;
 
 - (PKRevealController *)revealController
 {
-
     PKRevealController *controller = (PKRevealController *)objc_getAssociatedObject(self, &revealControllerKey);
     
     if (!controller)

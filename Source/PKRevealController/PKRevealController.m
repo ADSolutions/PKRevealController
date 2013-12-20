@@ -86,17 +86,17 @@ typedef struct
 @property (nonatomic, strong, readwrite) PKLayerAnimator *animator;
 
 #pragma mark - Methods
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                         leftViewController:(UIViewController *)leftViewController
-                        rightViewController:(UIViewController *)rightViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                         leftViewController:(id)leftViewController
+                        rightViewController:(id)rightViewController
                                     options:(NSDictionary *)options;
 
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                         leftViewController:(UIViewController *)leftViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                         leftViewController:(id)leftViewController
                                     options:(NSDictionary *)options;
 
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                        rightViewController:(UIViewController *)rightViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                        rightViewController:(id)rightViewController
                                     options:(NSDictionary *)options;
 
 @end
@@ -105,9 +105,9 @@ typedef struct
 
 #pragma mark - Initialization
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController
-                                    rightViewController:(UIViewController *)rightViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController
+                                    rightViewController:(id)rightViewController
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
                                           leftViewController:leftViewController
@@ -115,24 +115,24 @@ typedef struct
                                                      options:nil];
 }
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
                                           leftViewController:leftViewController
                                                      options:nil];
 }
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                    rightViewController:(UIViewController *)rightViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                    rightViewController:(id)rightViewController
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
                                          rightViewController:rightViewController
                                                      options:nil];
 }
 
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                         leftViewController:(UIViewController *)leftViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                         leftViewController:(id)leftViewController
                                     options:(NSDictionary *)options
 {
     return [self initWithFrontViewController:frontViewController
@@ -141,8 +141,8 @@ typedef struct
                                      options:options];
 }
 
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                        rightViewController:(UIViewController *)rightViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                        rightViewController:(id)rightViewController
                                     options:(NSDictionary *)options
 {
     return [self initWithFrontViewController:frontViewController
@@ -151,9 +151,9 @@ typedef struct
                                      options:options];
 }
 
-- (instancetype)initWithFrontViewController:(UIViewController *)frontViewController
-                         leftViewController:(UIViewController *)leftViewController
-                        rightViewController:(UIViewController *)rightViewController
+- (instancetype)initWithFrontViewController:(id)frontViewController
+                         leftViewController:(id)leftViewController
+                        rightViewController:(id)rightViewController
                                     options:(NSDictionary *)options
 {
     self = [self init];
@@ -213,8 +213,8 @@ typedef struct
 }
 #pragma mark - Deprecated Initialization
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController
                                                 options:(NSDictionary *)options
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
@@ -222,8 +222,8 @@ typedef struct
                                                      options:options];
 }
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                    rightViewController:(UIViewController *)rightViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                    rightViewController:(id)rightViewController
                                                 options:(NSDictionary *)options
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
@@ -231,9 +231,9 @@ typedef struct
                                                      options:options];
 }
 
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController
-                                    rightViewController:(UIViewController *)rightViewController
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController
+                                    rightViewController:(id)rightViewController
                                                 options:(NSDictionary *)options
 {
     return [[[self class] alloc] initWithFrontViewController:frontViewController
@@ -259,12 +259,12 @@ typedef struct
     [self showViewController:self.frontViewController];
 }
 
-- (void)showViewController:(UIViewController *)controller
+- (void)showViewController:(id)controller
 {
     [self showViewController:controller animated:YES completion:nil];
 }
 
-- (void)showViewController:(UIViewController *)controller
+- (void)showViewController:(id)controller
                   animated:(BOOL)animated
                 completion:(PKDefaultCompletionHandler)completion
 {
@@ -292,7 +292,7 @@ typedef struct
     }
 }
 
-- (void)enterPresentationModeForViewController:(UIViewController *)controller
+- (void)enterPresentationModeForViewController:(id)controller
                                       animated:(BOOL)animated
                                     completion:(PKDefaultCompletionHandler)completion
 {

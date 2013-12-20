@@ -135,9 +135,9 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  @param leftViewController The view controller on the left.
  @param rightViewController The view controller on the right.
  */
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController
-                                    rightViewController:(UIViewController *)rightViewController;
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController
+                                    rightViewController:(id)rightViewController;
 
 /**
  Convenience initializer. Use if only left rear views is used.
@@ -145,8 +145,8 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  @param frontViewController The view controller displayed on top of the left and right ones.
  @param leftViewController The view controller on the left.
  */
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                     leftViewController:(UIViewController *)leftViewController;
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                     leftViewController:(id)leftViewController;
 
 /**
  Convenience initializer. Use if only right rear views is used.
@@ -154,15 +154,15 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  @param frontViewController The view controller displayed on top of the left and right ones.
  @param rightViewController The view controller on the right.
  */
-+ (instancetype)revealControllerWithFrontViewController:(UIViewController *)frontViewController
-                                    rightViewController:(UIViewController *)rightViewController;
++ (instancetype)revealControllerWithFrontViewController:(id)frontViewController
+                                    rightViewController:(id)rightViewController;
 
 /**
  Shifts the front view to the position that's best suited to present the desired controller's view. (Animates by default)
  
  @param controller This is either the left or the right view controller (if present - respectively).
  */
-- (void)showViewController:(UIViewController *)controller;
+- (void)showViewController:(id)controller;
 
 /**
  Shifts the front view to the position that's best suited to present the desired controller's view.
@@ -171,7 +171,7 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  @param animated Whether the position adjustments should be animated or not.
  @param completion Executed on the main thread after the show animation is completed.
  */
-- (void)showViewController:(UIViewController *)controller
+- (void)showViewController:(id)controller
                   animated:(BOOL)animated
                 completion:(PKDefaultCompletionHandler)completion;
 
@@ -200,7 +200,7 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  
  @param frontViewController Thew new front view controller.
  */
-- (void)setFrontViewController:(UIViewController *)frontViewController;
+- (void)setFrontViewController:(id)frontViewController;
 
 /**
  Exchanges the current front view controller for a new one.
@@ -211,7 +211,7 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  @param focus Whether the front view controller's view animates back to its center position after it was set.
  @param completion Executed on the main thread after the show animation is completed.
  */
-- (void)setFrontViewController:(UIViewController *)frontViewController
+- (void)setFrontViewController:(id)frontViewController
               focusAfterChange:(BOOL)focus
                     completion:(PKDefaultCompletionHandler)completion __deprecated;
 
@@ -220,14 +220,14 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  
  @param leftViewController Thew new left view controller.
  */
-- (void)setLeftViewController:(UIViewController *)leftViewController;
+- (void)setLeftViewController:(id)leftViewController;
 
 /**
  Exchanges the current right view controller for a new one.
  
  @param rightViewController Thew new right view controller.
  */
-- (void)setRightViewController:(UIViewController *)rightViewController;
+- (void)setRightViewController:(id)rightViewController;
 
 /**
  Adjusts the minimum and maximum reveal width of any given view controller's view.
@@ -238,12 +238,12 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
  */
 - (void)setMinimumWidth:(CGFloat)minWidth
            maximumWidth:(CGFloat)maxWidth
-      forViewController:(UIViewController *)controller;
+      forViewController:(id)controller;
 
 /**
  @return Returns the currently focused controller, i.e. the one that's most prominent at any given point in time.
  */
-- (UIViewController *)focusedController;
+- (id)focusedController;
 
 /**
  @return Returns YES if the reveal controller has a right side, NO otherwise.
