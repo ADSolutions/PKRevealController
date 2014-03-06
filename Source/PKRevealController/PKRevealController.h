@@ -42,6 +42,12 @@ typedef enum : NSUInteger
     PKRevealControllerAnimationTypeStatic
 } PKRevealControllerAnimationType;
 
+/// controls the appearance of the side view, if it has to show from behind the front view or on top of it
+typedef NS_ENUM(NSInteger, PKRevealControllerMode) {
+    PKRevealControllerModeShowFromBehind = 0,
+    PKRevealControllerModeShowOnTop = 1
+};
+
 typedef enum : NSUInteger
 {
     PKRevealControllerTypeNone  = 0,
@@ -83,6 +89,9 @@ FOUNDATION_EXTERN NSString * const PKRevealControllerRecognizesResetTapOnFrontVi
 
 /// The controllers current state. **Observable.**
 @property (nonatomic, readonly) PKRevealControllerState state;
+
+/// The side controller appearance mode
+@property (nonatomic) PKRevealControllerMode mode;
 
 /// The view controller type. Deprecated because unnecessary. is -hasLeftViewController and hasRightViewController instead.
 @property (nonatomic, readonly) PKRevealControllerType type __deprecated;

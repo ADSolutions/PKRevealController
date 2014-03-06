@@ -1,27 +1,27 @@
 /*
-    PKRevealController > PKRevealController.m
-    Copyright (c) 2013 zuui.org (Philip Kluz). All rights reserved.
+ PKRevealController > PKRevealController.m
+ Copyright (c) 2013 zuui.org (Philip Kluz). All rights reserved.
  
-    The MIT License (MIT)
+ The MIT License (MIT)
  
-    Copyright (c) 2013 Philip Kluz
+ Copyright (c) 2013 Philip Kluz
  
-    Permission is hereby granted, free of charge, to any person obtaining a copy of
-    this software and associated documentation files (the "Software"), to deal in
-    the Software without restriction, including without limitation the rights to
-    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-    the Software, and to permit persons to whom the Software is furnished to do so,
-    subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ the Software, and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
  
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
  
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #import "PKRevealController.h"
@@ -334,12 +334,12 @@ typedef struct
             PKLog(@"%@ ERROR - %s : Cannot implicitly determine which side to enter presentation mode for. Please use enterPresentationModeForController:animated:completion: method.", [self class], __PRETTY_FUNCTION__);
             
             [self pk_performBlock:^
-            {
-                if (completion)
-                {
-                    completion(NO);
-                }
-            } onMainThread:YES];
+             {
+                 if (completion)
+                 {
+                     completion(NO);
+                 }
+             } onMainThread:YES];
             
             return;
         }
@@ -392,12 +392,12 @@ typedef struct
     else
     {
         [self pk_performBlock:^
-        {
-            if (completion)
-            {
-                completion(NO);
-            }
-        } onMainThread:YES];
+         {
+             if (completion)
+             {
+                 completion(NO);
+             }
+         } onMainThread:YES];
     }
 }
 
@@ -490,7 +490,6 @@ typedef struct
                       PKRevealControllerRecognizesResetTapOnFrontViewInPresentationModeKey];
     
     return [self dictionaryWithValuesForKeys:keys];
-
 }
 
 - (id)focusedController
@@ -565,13 +564,30 @@ typedef struct
     self.leftView.viewController = self.leftViewController;
     self.frontView.viewController = self.frontViewController;
     
-    self.frontView.shadow = YES;
+    self.frontView.shadow = _mode == PKRevealControllerModeShowFromBehind;
+    self.leftView.shadow = _mode != PKRevealControllerModeShowFromBehind;
+    self.rightView.shadow = _mode != PKRevealControllerModeShowFromBehind;
     
+    if (_mode == PKRevealControllerModeShowOnTop) {
+        [self.view addSubview:[(UIViewController *)self.leftViewController view]];
+        [self.view bringSubviewToFront:[(UIViewController *)self.leftViewController view]];
+        
+        [[(UIViewController *)self.leftViewController view].layer setShadowOffset:CGSizeMake(1, 0)];
+        [[(UIViewController *)self.leftViewController view].layer setShadowRadius:1];
+        [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
+        [[(UIViewController *)self.leftViewController view].layer setShouldRasterize:YES];
+        
+        [[(UIViewController *)self.leftViewController view] setFrame:CGRectMake(0, 0, self.leftViewWidthRange.location, [(UIViewController *)self.leftViewController view].frame.size.height)];
+    }
+    else
+    {
+        [self.view addSubview:self.leftView];
+    }
+
     self.leftView.hidden = YES;
     self.rightView.hidden = YES;
     
     [self.view addSubview:self.rightView];
-    [self.view addSubview:self.leftView];
     [self.view addSubview:self.frontView];
     
     [self addViewController:self.frontViewController container:self.frontView];
@@ -588,7 +604,7 @@ typedef struct
                                                                                    action:@selector(didRecognizeTapGesture:)];
     
     [self updatePanGestureRecognizerPresence];
-    [self updateTapGestureRecognizerPrecence];
+    [self updateTapGestureRecognizerPresence];
 }
 
 - (void)setRecognizesResetTapOnFrontView:(BOOL)recognizesResetTapOnFrontView
@@ -596,7 +612,7 @@ typedef struct
     if (_recognizesPanningOnFrontView != recognizesResetTapOnFrontView)
     {
         _recognizesPanningOnFrontView = recognizesResetTapOnFrontView;
-        [self updateTapGestureRecognizerPrecence];
+        [self updateTapGestureRecognizerPresence];
     }
 }
 
@@ -935,10 +951,10 @@ typedef struct
     self.state = [self stateForCurrentFrontViewPosition];
 }
 
-- (void)updateTapGestureRecognizerPrecence
+- (void)updateTapGestureRecognizerPresence
 {
     if ((self.state == PKRevealControllerShowsRightViewControllerInPresentationMode ||
-        self.state == PKRevealControllerShowsLeftViewControllerInPresentationMode) &&
+         self.state == PKRevealControllerShowsLeftViewControllerInPresentationMode) &&
         self.recognizesResetTapOnFrontViewInPresentationMode)
     {
         if(![self.frontView.gestureRecognizers containsObject:self.revealResetTapGestureRecognizer])
@@ -950,7 +966,7 @@ typedef struct
               self.state == PKRevealControllerShowsRightViewController) &&
              self.recognizesResetTapOnFrontView)
     {
-        if(![self.frontView.gestureRecognizers containsObject:self.revealResetTapGestureRecognizer])
+        if (![self.frontView.gestureRecognizers containsObject:self.revealResetTapGestureRecognizer])
         {
             [self.frontView addGestureRecognizer:self.revealResetTapGestureRecognizer];
         }
@@ -1063,17 +1079,18 @@ typedef struct
 
 - (void)addViewController:(id)childController container:(UIView *)container
 {
-    if (childController &&
-        ![self.childViewControllers containsObject:childController])
+    if (childController && ![self.childViewControllers containsObject:childController])
     {
         [self addChildViewController:childController];
         ((UIViewController *)childController).view.frame = container.bounds;
         ((UIViewController *)childController).view.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
         ((UIViewController *)childController).revealController = self;
         [container addSubview:((UIViewController *)childController).view];
-		if ([container isKindOfClass:[PKRevealControllerView class]]) {
+        
+        if ([container isKindOfClass:[PKRevealControllerView class]]) {
 			((PKRevealControllerView *)container).viewController = childController;
 		}
+        
         [self didMoveToParentViewController:self];
     }
 }
@@ -1093,6 +1110,41 @@ typedef struct
 
 - (void)animateToState:(PKRevealControllerState)toState completion:(PKDefaultCompletionHandler)completion
 {
+    if (_mode == PKRevealControllerModeShowOnTop)
+    {
+        if (toState == PKRevealControllerShowsLeftViewController)
+        {
+            [self.view bringSubviewToFront:[(UIViewController *)self.leftViewController view]];
+            
+            [[(UIViewController *)self.leftViewController view] setFrame:CGRectMake(0, 0, self.leftViewWidthRange.location, [(UIViewController *)self.leftViewController view].frame.size.height)];
+            [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
+            
+            [UIView animateWithDuration:0.15 animations:^{
+                [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake((self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
+                
+                [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
+            } completion:^(BOOL finished) {
+                if (finished) {
+                    [self updateRearViewVisibility];
+                }
+            }];
+        }
+        else if (toState == PKRevealControllerShowsFrontViewController)
+        {
+            [UIView animateWithDuration:0.15 animations:^{
+                [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
+                
+                [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:0];
+            } completion:^(BOOL finished) {
+                if (finished) {
+                    [self updateRearViewVisibility];
+                }
+            }];
+        }
+        
+        return;
+    }
+    
     [self updateRearViewVisibility];
     [self.animator stopAnimationForKey:kPKRevealControllerFrontViewTranslationAnimationKey];
     
@@ -1119,16 +1171,16 @@ typedef struct
             [self updateRearViewVisibility];
         }
         
-        [self updateTapGestureRecognizerPrecence];
+        [self updateTapGestureRecognizerPresence];
         [self updatePanGestureRecognizerPresence];
         
         [self pk_performBlock:^
-        {
-            if (completion)
-            {
-                completion(finished);
-            }
-        } onMainThread:YES];
+         {
+             if (completion)
+             {
+                 completion(finished);
+             }
+         } onMainThread:YES];
     };
     
     [self.animator addSequentialAnimation:animation forKey:kPKRevealControllerFrontViewTranslationAnimationKey];
@@ -1162,8 +1214,7 @@ typedef struct
         }
         else if (fromState == PKRevealControllerShowsLeftViewController)
         {
-            if (toState == PKRevealControllerShowsLeftViewControllerInPresentationMode ||
-                toState == PKRevealControllerShowsFrontViewController)
+            if (toState == PKRevealControllerShowsLeftViewControllerInPresentationMode || toState == PKRevealControllerShowsFrontViewController)
             {
                 keyPositions = [self keyPositionsToState:toState viaFrontView:NO];
             }
@@ -1341,18 +1392,18 @@ typedef struct
     else if ([self hasLeftViewController] && [self hasRightViewController])
     {
         return [self.frontViewController shouldAutorotate] &&
-               [self.leftViewController shouldAutorotate] &&
-               [self.rightViewController shouldAutorotate];
+        [self.leftViewController shouldAutorotate] &&
+        [self.rightViewController shouldAutorotate];
     }
     else if ([self hasLeftViewController])
     {
         return [self.frontViewController shouldAutorotate] &&
-               [self.leftViewController shouldAutorotate];
+        [self.leftViewController shouldAutorotate];
     }
     else if ([self hasRightViewController])
     {
         return [self.frontViewController shouldAutorotate] &&
-               [self.rightViewController shouldAutorotate];
+        [self.rightViewController shouldAutorotate];
     }
     else
     {
@@ -1365,18 +1416,18 @@ typedef struct
     if ([self hasLeftViewController] && [self hasRightViewController])
     {
         return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
-               ((UIViewController *)self.leftViewController).supportedInterfaceOrientations &
-               ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
+        ((UIViewController *)self.leftViewController).supportedInterfaceOrientations &
+        ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
     }
     else if ([self hasLeftViewController])
     {
         return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
-               ((UIViewController *)self.leftViewController).supportedInterfaceOrientations;
+        ((UIViewController *)self.leftViewController).supportedInterfaceOrientations;
     }
     else if ([self hasRightViewController])
     {
         return ((UIViewController *)self.frontViewController).supportedInterfaceOrientations &
-               ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
+        ((UIViewController *)self.rightViewController).supportedInterfaceOrientations;
     }
     else
     {
@@ -1393,18 +1444,18 @@ typedef struct
     else if ([self hasLeftViewController] && [self hasRightViewController])
     {
         return [self.frontViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation] &&
-               [self.leftViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation] &&
-               [self.rightViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
+        [self.leftViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation] &&
+        [self.rightViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
     }
     else if ([self hasLeftViewController])
     {
         return [self.frontViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation] &&
-               [self.leftViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
+        [self.leftViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
     }
     else if ([self hasRightViewController])
     {
         return [self.frontViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation] &&
-               [self.rightViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
+        [self.rightViewController shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
     }
     else
     {
