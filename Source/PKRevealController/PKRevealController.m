@@ -780,7 +780,10 @@ typedef struct
         }
     }
     
-    self.frontView.layer.position = CGPointMake(newX, self.frontView.layer.position.y);
+    if (_mode == PKRevealControllerModeShowFromBehind) {
+        self.frontView.layer.position = CGPointMake(newX, self.frontView.layer.position.y);
+    }
+    
     [self updateRearViewVisibility];
     
     _frontViewInteraction.recognizerFlags.previousTouchPoint = _frontViewInteraction.recognizerFlags.currentTouchPoint;
