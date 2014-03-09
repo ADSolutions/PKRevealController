@@ -576,17 +576,12 @@ typedef struct
         [[(UIViewController *)self.leftViewController view].layer setShadowRadius:1];
         [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
         [[(UIViewController *)self.leftViewController view].layer setShouldRasterize:YES];
-        
-        [[(UIViewController *)self.leftViewController view] setFrame:CGRectMake(0, 0, self.leftViewWidthRange.location, [(UIViewController *)self.leftViewController view].frame.size.height)];
-    }
-    else
-    {
-        [self.view addSubview:self.leftView];
     }
 
     self.leftView.hidden = YES;
     self.rightView.hidden = YES;
     
+    [self.view addSubview:self.leftView];
     [self.view addSubview:self.rightView];
     [self.view addSubview:self.frontView];
     
@@ -636,7 +631,10 @@ typedef struct
     [self setupContainerViews];
     [self setupGestureRecognizers];
     
-    self.animator = [PKLayerAnimator animatorForLayer:self.frontView.layer];
+    if (_mode == PKRevealControllerModeShowFromBehind)
+        self.animator = [PKLayerAnimator animatorForLayer:self.frontView.layer];
+    else
+        self.animator = [PKLayerAnimator animatorForLayer:self.leftView.layer];
 }
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
@@ -1122,7 +1120,7 @@ typedef struct
             [[(UIViewController *)self.leftViewController view] setFrame:CGRectMake(0, 0, self.leftViewWidthRange.location, [(UIViewController *)self.leftViewController view].frame.size.height)];
             [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
             
-            [UIView animateWithDuration:0.15 animations:^{
+            [UIView animateWithDuration:0.10 animations:^{
                 [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake((self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
                 
                 [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
@@ -1134,7 +1132,7 @@ typedef struct
         }
         else if (toState == PKRevealControllerShowsFrontViewController)
         {
-            [UIView animateWithDuration:0.15 animations:^{
+            [UIView animateWithDuration:0.10 animations:^{
                 [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
                 
                 [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:0];
