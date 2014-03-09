@@ -29,6 +29,7 @@
 #import "PKLayerAnimator.h"
 #import "PKRevealControllerView.h"
 #import "PKLog.h"
+#import "Categories/CALayer+PKConvenienceAnimations.h"
 
 #define DEFAULT_ANIMATION_DURATION_VALUE 0.185
 #define DEFAULT_ANIMATION_CURVE_VALUE UIViewAnimationCurveLinear
@@ -419,6 +420,18 @@ typedef struct
     }
 }
 
+-(void)setLeftViewWidthRange:(NSRange)leftViewWidthRange
+{
+    _leftViewWidthRange = leftViewWidthRange;
+    
+    if (_mode == PKRevealControllerModeShowOnTop) {
+        [self.leftView setFrame:CGRectMake(0, CGRectGetMinY(self.leftView.frame), leftViewWidthRange.location, CGRectGetHeight(self.view.frame))];
+        [self.leftView setCenter:CGPointMake(-leftViewWidthRange.location, CGRectGetMidY(self.leftView.frame))];
+        [self showLeftView];
+        [self.leftView setShadow:YES];
+    }
+}
+
 - (void)setLeftViewController:(id)leftViewController
 {
     if (leftViewController != _leftViewController)
@@ -565,19 +578,9 @@ typedef struct
     self.frontView.viewController = self.frontViewController;
     
     self.frontView.shadow = _mode == PKRevealControllerModeShowFromBehind;
-    self.leftView.shadow = _mode != PKRevealControllerModeShowFromBehind;
+    self.leftView.shadow = NO;
     self.rightView.shadow = _mode != PKRevealControllerModeShowFromBehind;
     
-    if (_mode == PKRevealControllerModeShowOnTop) {
-        [self.view addSubview:[(UIViewController *)self.leftViewController view]];
-        [self.view bringSubviewToFront:[(UIViewController *)self.leftViewController view]];
-        
-        [[(UIViewController *)self.leftViewController view].layer setShadowOffset:CGSizeMake(1, 0)];
-        [[(UIViewController *)self.leftViewController view].layer setShadowRadius:1];
-        [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
-        [[(UIViewController *)self.leftViewController view].layer setShouldRasterize:YES];
-    }
-
     self.leftView.hidden = YES;
     self.rightView.hidden = YES;
     
@@ -732,9 +735,11 @@ typedef struct
 {
     [self.animator stopAnimationForKey:kPKRevealControllerFrontViewTranslationAnimationKey];
     
+    CALayer *referenceLayer = _mode == PKRevealControllerModeShowFromBehind? self.frontView.layer : self.leftView.layer;
+    
     _frontViewInteraction.recognizerFlags.initialTouchPoint = [recognizer translationInView:self.frontView];
     _frontViewInteraction.recognizerFlags.previousTouchPoint = _frontViewInteraction.recognizerFlags.initialTouchPoint;
-    _frontViewInteraction.initialFrontViewPosition = self.frontView.layer.position;
+    _frontViewInteraction.initialFrontViewPosition = referenceLayer.position;
     _frontViewInteraction.isInteracting = YES;
     
     [self updateRearViewVisibility];
@@ -742,6 +747,13 @@ typedef struct
 
 - (void)handlePanGestureChangedWithRecognizer:(UIPanGestureRecognizer *)recognizer
 {
+    CALayer *referenceLayer = _mode == PKRevealControllerModeShowFromBehind? self.frontView.layer : self.leftView.layer;
+    
+    if ((_mode == PKRevealControllerModeShowOnTop) && (![self isLeftViewVisible])) {
+        [self showLeftView];
+        return;
+    }
+    
     _frontViewInteraction.recognizerFlags.currentTouchPoint = [recognizer translationInView:self.frontView];
     CGFloat newX = _frontViewInteraction.initialFrontViewPosition.x + (_frontViewInteraction.recognizerFlags.initialTouchPoint.x + _frontViewInteraction.recognizerFlags.currentTouchPoint.x);
     
@@ -755,18 +767,18 @@ typedef struct
     }
     else
     {
-        CGFloat dampenedLeft = [self dampenedValueForRealValue:(newX - CGRectGetMidX(self.frontView.bounds)) inRange:self.leftViewWidthRange] + CGRectGetMidX(self.frontView.bounds);
-        CGFloat dampenedRight = [self dampenedValueForRealValue:(newX - CGRectGetMidX(self.frontView.bounds)) inRange:self.rightViewWidthRange] + CGRectGetMidX(self.frontView.bounds);
+        CGFloat dampenedLeft = [self dampenedValueForRealValue:(newX - CGRectGetMidX(referenceLayer.bounds)) inRange:self.leftViewWidthRange] + CGRectGetMidX(referenceLayer.bounds);
+        CGFloat dampenedRight = [self dampenedValueForRealValue:(newX - CGRectGetMidX(referenceLayer.bounds)) inRange:self.rightViewWidthRange] + CGRectGetMidX(referenceLayer.bounds);
         
         if (newX >= [self centerPointForState:PKRevealControllerShowsLeftViewControllerInPresentationMode].x &&
             !([self centerPointForState:PKRevealControllerShowsLeftViewControllerInPresentationMode].x >= dampenedLeft))
         {
-            newX = self.frontView.layer.position.x;
+            newX = referenceLayer.position.x;
         }
         else if (newX <= [self centerPointForState:PKRevealControllerShowsRightViewControllerInPresentationMode].x &&
                  !([self centerPointForState:PKRevealControllerShowsRightViewControllerInPresentationMode].x <= dampenedRight))
         {
-            newX = self.frontView.layer.position.x;
+            newX = referenceLayer.position.x;
         }
         else if (newX >= [self centerPointForState:PKRevealControllerShowsLeftViewController].x)
         {
@@ -778,9 +790,7 @@ typedef struct
         }
     }
     
-    if (_mode == PKRevealControllerModeShowFromBehind) {
-        self.frontView.layer.position = CGPointMake(newX, self.frontView.layer.position.y);
-    }
+    referenceLayer.position = CGPointMake(newX, referenceLayer.position.y);
     
     [self updateRearViewVisibility];
     
@@ -921,7 +931,13 @@ typedef struct
     }
     else
     {
-        [self hideRearViews];
+        if (_mode == PKRevealControllerModeShowFromBehind) {
+            [self hideRearViews];
+        }
+        else
+        {
+            [self showLeftView];
+        }
     }
 }
 
@@ -945,7 +961,13 @@ typedef struct
     {
         if (!self.leftView.hidden || !self.rightView.hidden)
         {
-            [self hideRearViews];
+            if (_mode == PKRevealControllerModeShowFromBehind) {
+                [self hideRearViews];
+            }
+            else
+            {
+                [self showLeftView];
+            }
         }
     }
     
@@ -958,7 +980,7 @@ typedef struct
          self.state == PKRevealControllerShowsLeftViewControllerInPresentationMode) &&
         self.recognizesResetTapOnFrontViewInPresentationMode)
     {
-        if(![self.frontView.gestureRecognizers containsObject:self.revealResetTapGestureRecognizer])
+        if (![self.frontView.gestureRecognizers containsObject:self.revealResetTapGestureRecognizer])
         {
             [self.frontView addGestureRecognizer:self.revealResetTapGestureRecognizer];
         }
@@ -1023,7 +1045,7 @@ typedef struct
     self.leftView.hidden = NO;
     [self removeViewController:self.rightViewController];
     [self addViewController:self.leftViewController container:self.leftView];
-    [self.frontView setUserInteractionForContainedViewEnabled:NO];
+    [self.frontView setUserInteractionForContainedViewEnabled:_mode == PKRevealControllerModeShowOnTop];
 }
 
 - (BOOL)isLeftViewVisible
@@ -1063,6 +1085,10 @@ typedef struct
         }
     }
     
+    if (_mode == PKRevealControllerModeShowOnTop) {
+        [self showLeftView];
+    }
+    
     [self animateToState:toState completion:nil];
 }
 
@@ -1092,6 +1118,10 @@ typedef struct
 			((PKRevealControllerView *)container).viewController = childController;
 		}
         
+        if ((_mode == PKRevealControllerModeShowOnTop) && ([childController isEqual:self.leftView.viewController])) {
+            [self.view bringSubviewToFront:container];
+        }
+        
         [self didMoveToParentViewController:self];
     }
 }
@@ -1111,41 +1141,6 @@ typedef struct
 
 - (void)animateToState:(PKRevealControllerState)toState completion:(PKDefaultCompletionHandler)completion
 {
-    if (_mode == PKRevealControllerModeShowOnTop)
-    {
-        if (toState == PKRevealControllerShowsLeftViewController)
-        {
-            [self.view bringSubviewToFront:[(UIViewController *)self.leftViewController view]];
-            
-            [[(UIViewController *)self.leftViewController view] setFrame:CGRectMake(0, 0, self.leftViewWidthRange.location, [(UIViewController *)self.leftViewController view].frame.size.height)];
-            [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
-            
-            [UIView animateWithDuration:0.10 animations:^{
-                [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake((self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
-                
-                [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:1];
-            } completion:^(BOOL finished) {
-                if (finished) {
-                    [self updateRearViewVisibility];
-                }
-            }];
-        }
-        else if (toState == PKRevealControllerShowsFrontViewController)
-        {
-            [UIView animateWithDuration:0.10 animations:^{
-                [[(UIViewController *)self.leftViewController view] setCenter:CGPointMake([self.leftViewController view].frame.origin.x - (self.leftViewWidthRange.location /2), [(UIViewController *)self.leftViewController view].center.y)];
-                
-                [[(UIViewController *)self.leftViewController view].layer setShadowOpacity:0];
-            } completion:^(BOOL finished) {
-                if (finished) {
-                    [self updateRearViewVisibility];
-                }
-            }];
-        }
-        
-        return;
-    }
-    
     [self updateRearViewVisibility];
     [self.animator stopAnimationForKey:kPKRevealControllerFrontViewTranslationAnimationKey];
     
@@ -1321,19 +1316,21 @@ typedef struct
 
 - (CGPoint)centerPointForState:(PKRevealControllerState)state
 {
-    CGPoint center = CGPointMake(self.frontView.layer.position.x, self.frontView.layer.position.y);
+    CALayer *refenreceLayer = self.frontView.layer;
+    
+    CGPoint center = CGPointMake(refenreceLayer.position.x, refenreceLayer.position.y);
     
     switch (state)
     {
         case PKRevealControllerShowsFrontViewController:
         {
-            center.x = CGRectGetMidX(self.view.bounds);
+            center.x = _mode == PKRevealControllerModeShowOnTop? -self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds);
         }
             break;
             
         case PKRevealControllerShowsLeftViewController:
         {
-            center.x = CGRectGetMidX(self.view.bounds) + [self leftViewMinWidth];
+            center.x = PKRevealControllerModeShowOnTop? CGRectGetMidX(self.view.bounds)-self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) + [self leftViewMinWidth];
         }
             break;
             
@@ -1345,13 +1342,13 @@ typedef struct
             
         case PKRevealControllerShowsLeftViewControllerInPresentationMode:
         {
-            center.x = CGRectGetMidX(self.view.bounds) + [self leftViewMaxWidth];
+            center.x = PKRevealControllerModeShowOnTop? CGRectGetMidX(self.view.bounds)-self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) + [self leftViewMaxWidth];
         }
             break;
             
         case PKRevealControllerShowsRightViewControllerInPresentationMode:
         {
-            center.x = CGRectGetMidX(self.view.bounds) - [self rightViewMaxWidth];
+            center.x = PKRevealControllerModeShowOnTop? -self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) - [self rightViewMaxWidth];
         }
     }
     
