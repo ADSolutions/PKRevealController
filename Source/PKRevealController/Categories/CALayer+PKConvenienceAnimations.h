@@ -63,12 +63,3 @@
             alterModel:(BOOL)alterModel;
 
 @end
-
-// CALayer+Additions.h
-
-@interface CALayer (Additions)
-
-- (void)bringSublayerToFront:(CALayer *)layer;
-- (void)sendSublayerToBack:(CALayer *)layer;
-
-@end

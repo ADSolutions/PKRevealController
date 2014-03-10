@@ -130,21 +130,3 @@
 }
 
 @end
-
-// CALayer+Additions.m
-
-@implementation CALayer (Additions)
-
-- (void)bringSublayerToFront:(CALayer *)layer {
-    CALayer *superlayer = self.superlayer;
-    [self removeFromSuperlayer];
-    [superlayer insertSublayer:layer atIndex:[self.sublayers count] -1];
-}
-
-- (void)sendSublayerToBack:(CALayer *)layer {
-    CALayer *superlayer = self.superlayer;
-    [self removeFromSuperlayer];
-    [superlayer insertSublayer:layer atIndex:0];
-}
-
-@end
