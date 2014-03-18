@@ -72,21 +72,23 @@ static NSString *kShadowTransitionAnimationKey = @"shadowTransitionAnimation";
 
 - (void)updateShadowWithAnimationDuration:(NSTimeInterval)duration
 {
-    UIBezierPath *existingShadowPath = [UIBezierPath bezierPathWithCGPath:self.layer.shadowPath];
-    
-    self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
-    
-    if (existingShadowPath != nil)
-    {
-        PKAnimation *transition = [PKAnimation animationWithKeyPath:@"shadowPath"];
-        transition.fromValue = (__bridge id)(existingShadowPath.CGPath);
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.duration = duration;
-        transition.removedOnCompletion = NO;
-        transition.delegate = self;
-        transition.identifier = SHADOW_TRANSITION_ANIMATION_IDENTIFIER;
+    if (self.layer.shadowPath) {
+        UIBezierPath *existingShadowPath = [UIBezierPath bezierPathWithCGPath:self.layer.shadowPath];
         
-        [self.layer addAnimation:transition forKey:kShadowTransitionAnimationKey];
+        self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+        
+        if (existingShadowPath != nil)
+        {
+            PKAnimation *transition = [PKAnimation animationWithKeyPath:@"shadowPath"];
+            transition.fromValue = (__bridge id)(existingShadowPath.CGPath);
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.duration = duration;
+            transition.removedOnCompletion = NO;
+            transition.delegate = self;
+            transition.identifier = SHADOW_TRANSITION_ANIMATION_IDENTIFIER;
+            
+            [self.layer addAnimation:transition forKey:kShadowTransitionAnimationKey];
+        }
     }
 }
 
