@@ -425,9 +425,7 @@ typedef struct
     _leftViewWidthRange = leftViewWidthRange;
     
     if (_mode == PKRevealControllerModeShowOnTop) {
-        [self.leftView setFrame:CGRectMake(0, CGRectGetMinY(self.leftView.frame), leftViewWidthRange.location, CGRectGetHeight(self.view.frame))];
-        [self.leftView setCenter:CGPointMake(-leftViewWidthRange.location, CGRectGetMidY(self.leftView.frame))];
-        [self showLeftView];
+        [self.leftView setFrame:CGRectMake(-(float)leftViewWidthRange.location, 0, (float)leftViewWidthRange.location, (float)leftViewWidthRange.length)];
         [self.leftView setShadow:YES];
     }
 }
@@ -1324,13 +1322,13 @@ typedef struct
     {
         case PKRevealControllerShowsFrontViewController:
         {
-            center.x = _mode == PKRevealControllerModeShowOnTop? -self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds);
+            center.x = _mode == PKRevealControllerModeShowOnTop? -(float)_leftViewWidthRange.location : CGRectGetMidX(self.view.bounds);
         }
             break;
             
         case PKRevealControllerShowsLeftViewController:
         {
-            center.x = PKRevealControllerModeShowOnTop? CGRectGetMidX(self.view.bounds)-self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) + [self leftViewMinWidth];
+            center.x = _mode == PKRevealControllerModeShowOnTop? (float)_leftViewWidthRange.location/2 : CGRectGetMidX(self.view.bounds) + [self leftViewMinWidth];
         }
             break;
             
@@ -1342,13 +1340,13 @@ typedef struct
             
         case PKRevealControllerShowsLeftViewControllerInPresentationMode:
         {
-            center.x = PKRevealControllerModeShowOnTop? CGRectGetMidX(self.view.bounds)-self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) + [self leftViewMaxWidth];
+            center.x = _mode == PKRevealControllerModeShowOnTop? (float)_leftViewWidthRange.location/2 : CGRectGetMidX(self.view.bounds) + [self leftViewMaxWidth];
         }
             break;
             
         case PKRevealControllerShowsRightViewControllerInPresentationMode:
         {
-            center.x = PKRevealControllerModeShowOnTop? -self.leftView.frame.size.width : CGRectGetMidX(self.view.bounds) - [self rightViewMaxWidth];
+            center.x = _mode == PKRevealControllerModeShowOnTop? -(float)_leftViewWidthRange.location : CGRectGetMidX(self.view.bounds) - [self rightViewMaxWidth];
         }
     }
     
