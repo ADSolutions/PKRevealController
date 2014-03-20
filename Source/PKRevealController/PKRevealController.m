@@ -426,7 +426,7 @@ typedef struct
     
     if (_mode == PKRevealControllerModeShowOnTop) {
         [self.leftView setFrame:CGRectMake(-(float)leftViewWidthRange.location, 0, (float)leftViewWidthRange.location, (float)leftViewWidthRange.length)];
-        [self.leftView setShadow:YES];
+        [self.leftView setHidden:YES];
     }
 }
 
