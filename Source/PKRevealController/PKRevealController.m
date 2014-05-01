@@ -426,7 +426,7 @@ typedef struct
     
     if (_mode == PKRevealControllerModeShowOnTop) {
         [self.leftView setFrame:CGRectMake(-(float)leftViewWidthRange.location, 0, (float)leftViewWidthRange.location, (float)leftViewWidthRange.length)];
-        [self.leftView setHidden:YES];
+        [self.leftView setShadow:YES];
     }
 }
 
@@ -596,8 +596,8 @@ typedef struct
     
     self.revealPanGestureRecognizer.maximumNumberOfTouches = 1;
     
-    self.revealResetTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                   action:@selector(didRecognizeTapGesture:)];
+    self.revealResetTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didRecognizeTapGesture:)];
+    [self.revealResetTapGestureRecognizer setCancelsTouchesInView:NO];
     
     [self updatePanGestureRecognizerPresence];
     [self updateTapGestureRecognizerPresence];
@@ -1462,7 +1462,18 @@ typedef struct
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                          duration:(NSTimeInterval)duration
 {
+    if (_mode == PKRevealControllerModeShowOnTop) {
+        [self.leftView setHidden:YES];
+    }
+    
     [self.frontView updateShadowWithAnimationDuration:duration];
+}
+
+-(void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if (_mode == PKRevealControllerModeShowOnTop) {
+        [self.leftView setHidden:NO];
+    }
 }
 
 @end
