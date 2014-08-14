@@ -699,31 +699,37 @@ typedef struct
 
 - (void)didRecognizePanGesture:(UIPanGestureRecognizer *)recognizer
 {
-    switch (recognizer.state)
+    if ([_frontViewController respondsToSelector:@selector(shouldAllowPanGestureOnView)] && ![_frontViewController shouldAllowPanGestureOnView]) {
+        //
+    }
+    else
     {
-        case UIGestureRecognizerStateBegan:
+        switch (recognizer.state)
         {
-            [self handlePanGestureBeganWithRecognizer:recognizer];
+            case UIGestureRecognizerStateBegan:
+            {
+                [self handlePanGestureBeganWithRecognizer:recognizer];
+            }
+                break;
+                
+            case UIGestureRecognizerStateChanged:
+            {
+                [self handlePanGestureChangedWithRecognizer:recognizer];
+            }
+                break;
+                
+            case UIGestureRecognizerStateEnded:
+            case UIGestureRecognizerStateCancelled:
+            case UIGestureRecognizerStateFailed:
+            {
+                [self handlePanGestureEndedWithRecognizer:recognizer];
+            }
+                break;
+                
+            default:
+                [self handlePanGestureEndedWithRecognizer:recognizer];
+                break;
         }
-            break;
-            
-        case UIGestureRecognizerStateChanged:
-        {
-            [self handlePanGestureChangedWithRecognizer:recognizer];
-        }
-            break;
-            
-        case UIGestureRecognizerStateEnded:
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed:
-        {
-            [self handlePanGestureEndedWithRecognizer:recognizer];
-        }
-            break;
-            
-        default:
-            [self handlePanGestureEndedWithRecognizer:recognizer];
-            break;
     }
 }
 

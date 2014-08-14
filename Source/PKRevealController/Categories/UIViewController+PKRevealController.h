@@ -40,4 +40,6 @@
 #pragma mark - Properties
 @property (nonatomic, strong, readwrite) PKRevealController *revealController;
 
+-(BOOL)shouldAllowPanGestureOnView;
+
 @end
