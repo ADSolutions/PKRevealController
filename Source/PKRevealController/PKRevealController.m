@@ -699,7 +699,12 @@ typedef struct
 
 - (void)didRecognizePanGesture:(UIPanGestureRecognizer *)recognizer
 {
-    if ([_frontViewController respondsToSelector:@selector(shouldAllowPanGestureOnView)] && ![_frontViewController shouldAllowPanGestureOnView]) {
+    id showedViewController = _frontViewController;
+    if ([showedViewController isKindOfClass:[UINavigationController class]]) {
+        showedViewController = [[(UINavigationController *)_frontViewController childViewControllers] lastObject];
+    }
+    
+    if ([showedViewController respondsToSelector:@selector(shouldAllowPanGestureOnView)] && ![showedViewController shouldAllowPanGestureOnView]) {
         //
     }
     else
