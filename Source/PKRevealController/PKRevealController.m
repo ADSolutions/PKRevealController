@@ -268,7 +268,7 @@ typedef struct
 - (void)showViewController:(id)controller
                   animated:(BOOL)animated
                 completion:(PKDefaultCompletionHandler)completion
-{
+{    
     PKRevealControllerState toState = PKRevealControllerShowsFrontViewController;
     CGPoint toPoint = [self centerPointForState:toState];
     
@@ -404,6 +404,19 @@ typedef struct
 
 - (void)setFrontViewController:(id)frontViewController
 {
+    id showedViewController = frontViewController;
+    if ([showedViewController isKindOfClass:[UINavigationController class]]) {
+        showedViewController = [[(UINavigationController *)frontViewController childViewControllers] lastObject];
+    }
+    
+    if ([showedViewController respondsToSelector:@selector(shouldAllowPanGestureOnView)]) {
+        [self.revealPanGestureRecognizer setEnabled:[showedViewController shouldAllowPanGestureOnView]];
+    }
+    else
+    {
+        [self.revealPanGestureRecognizer setEnabled:YES];
+    }
+    
     if (frontViewController != _frontViewController)
     {
         if (_frontViewController)
@@ -705,7 +718,6 @@ typedef struct
     }
     
     if ([showedViewController respondsToSelector:@selector(shouldAllowPanGestureOnView)] && ![showedViewController shouldAllowPanGestureOnView]) {
-        //
     }
     else
     {
